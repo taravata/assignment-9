@@ -25,26 +25,68 @@
     data_normalized = (data - min(data)) / (max(data) - min(data))
 
     return(data_normalized)
+ # 1.2.plot the loss curve and plot the accuracy curve
+
+    def plot_history(net_history):
+     history = net_history.history
+     import matplotlib.pyplot as plt
+      losses = history['loss']
+      val_losses = history['val_loss']
+      accuracies = history['accuracy']
+      val_accuracies = history['val_accuracy']
     
-#
-# make a matrix each column of which represents an images in a vector form
-#
-     list_image  = np.empty((size_row * size_col, num_image), dtype=float)
-     list_label  = np.empty(num_image, dtype=int)
-
-    for line in data:
-
-    line_data   = line.split(',')
-    label       = line_data[0]
-    im_vector   = np.asfarray(line_data[1:])
-    im_vector   = normalize(im_vector)
-
-    list_label[count]       = label
-    list_image[:, count]    = im_vector
-
-    count += 1
+      plt.xlabel('Epochs')
+      plt.ylabel('Loss')
+      plt.plot(losses, 'r')
+      plt.plot(val_losses, 'b')
+      plt.legend(['loss', 'val_loss'])
     
-    
-    y, x= list_label, list_image
-    x = x.transpose()
+      plt.figure()
+      plt.xlabel('Epochs')
+      plt.ylabel('Accuracy')
+      plt.plot(accuracies, 'b')
+      plt.plot(val_accuracies, 'r')
+      plt.legend(['acc', 'val_acc'])
 
+# Load data
+    train_images,test_images, train_labels, test_labels= train_test_split(x,y,train_size=0.5,test_size=0.5,random_state=123)
+
+
+# Data attributes 
+    print("train_images dimentions: ", train_images.ndim)
+    print("train_images shape: ", train_images.shape)
+    print("train_images type: ", train_images.dtype)
+
+    X_train = train_images.reshape(5000, 784)
+    X_test = test_images.reshape(5000, 784)
+
+    X_train = X_train.astype('float32')
+    X_test = X_test.astype('float32')
+
+    X_train /= 255
+    X_test /= 255
+
+    from keras.utils import np_utils
+    Y_train = np_utils.to_categorical(train_labels)
+    Y_test = np_utils.to_categorical(test_labels)
+
+#==================================================
+# Creating our model
+    from keras.models import Sequential
+    from keras.layers import Dense, Dropout,Conv2D
+    from keras.optimizers import SGD
+    from keras.losses import categorical_crossentropy
+
+    myModel = Sequential()
+    myModel.add(Dense(196, activation='relu', input_shape=(784,)))
+    myModel.add(Dropout(20))
+    myModel.add(Dense(49, activation='relu'))
+    myModel.add(Dropout(20))
+    myModel.add(Dense(10, activation='softmax'))
+
+
+    myModel.summary()
+    myModel.compile(optimizer=SGD(lr=0.001), loss=categorical_crossentropy, metrics=['accuracy'])
+
+
+#==================================================
