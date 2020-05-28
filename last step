@@ -1,0 +1,48 @@
+# 3.Plot the accuracy value : Train our model
+    network_history = myModel.fit(X_train, Y_train, batch_size=128, epochs=30, validation_split=0.2)
+    score = myModel.evaluate(X_test, Y_test, verbose=0)
+    print('Test loss:', score[0])
+    print('Test accuracy:', score[1])
+     plot_history(network_history)
+
+# Evaluation
+    test_loss, test_acc = myModel.evaluate(X_test, Y_test)
+    test_labels_p = myModel.predict(X_test)
+    test_labels_p = np.argmax(test_labels_p, axis=1)
+
+# Change layers config
+    myModel.layers[0].name = 'Layer_0'
+    myModel.layers[0].trainable = False
+    myModel.layers[0].get_config()
+    
+    
+# 4.Plot the classification example
+    y_pred = myModel.predict(X_test)
+    X_test__ = X_test.reshape(X_test.shape[0], 28, 28)
+
+    fig, axis = plt.subplots(2, 5, figsize=(12, 14))
+    for i, ax in enumerate(axis.flat):
+    ax.imshow(X_test__[i], cmap='binary')
+    ax.set(title = f"Real Number is {Y_test[i].argmax()}\nPredict Number is {y_pred[i].argmax()}");
+#
+# make a matrix each column of which represents an images in a vector form
+#
+     list_image  = np.empty((size_row * size_col, num_image), dtype=float)
+     list_label  = np.empty(num_image, dtype=int)
+
+    for line in data:
+
+    line_data   = line.split(',')
+    label       = line_data[0]
+    im_vector   = np.asfarray(line_data[1:])
+    im_vector   = normalize(im_vector)
+
+    list_label[count]       = label
+    list_image[:, count]    = im_vector
+
+    count += 1
+    
+    
+    y, x= list_label, list_image
+    x = x.transpose()
+
